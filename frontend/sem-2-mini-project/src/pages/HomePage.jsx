@@ -1,11 +1,10 @@
-import React from 'react';
 import { BookOpen, Code, FileText, Zap, ArrowRight } from 'lucide-react';
 import '../assets/css/HomePage.css';
 
 const HomePage = () => {
     return (
         <div className="homepage-container">
-            {/* 1. Navigation Bar */}
+            {/* Navigation Bar */}
             <nav className="homepage-navbar">
                 <div className="logo-group">
                     <BookOpen size={28} color="#4F46E5" />
@@ -17,7 +16,7 @@ const HomePage = () => {
                 </div>
             </nav>
 
-            {/* 2. Hero Section */}
+            {/* Hero Section */}
             <section className="hero-section">
                 <div className="hero-badge">
                     <Zap size={14} color="#4F46E5" />
@@ -25,7 +24,7 @@ const HomePage = () => {
                 </div>
                 <h1 className="hero-title">
                     Organize Your Code, Notes & <br />
-                    <span className="highlight-text">Cheatsheets in One Place</span>
+                    <span>Cheatsheets in One Place</span>
                 </h1>
                 <p className="hero-subtitle">
                     DevNotes helps developers streamline their learning, document daily code snippets, and manage class notes seamlessly with speed and privacy.
@@ -40,7 +39,7 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* 3. Features Section */}
+            {/* Features Section */}
             <section className="features-section">
                 <h2 className="section-title">Everything You Need to Stay Organized</h2>
                 
@@ -77,7 +76,7 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* 4. Footer */}
+            {/* Footer */}
             <footer className="homepage-footer">
                 <p>© 2026 DevNotes. Built for Developers.</p>
             </footer>

@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
-import { UserPlus, User, Mail, Lock } from 'lucide-react';
-import '../assets/css/RegisterPage.css';
+import { useState } from "react";
+import { UserPlus, User, Mail, Lock } from "lucide-react";
+import "../assets/css/RegisterPage.css";
+import axios from 'axios';
 
 const Register = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Register submitted:", { name, email, password });
+        // 💡 Add your login / authentication logic here
+        console.log("Register Form submitted:", { name, email, password });
+        try {
+            const response = await axios.post("http://localhost:3000/users/register", {
+                name,
+                email,
+                password,
+            });
+            console.log("Register successful: ", response.data);
+            alert("Register Successful!");
+        } catch (error) {
+            console.log("Register Error: ", error);
+        }
     };
 
     return (
@@ -24,38 +37,17 @@ const Register = () => {
                 <form onSubmit={handleSubmit} className="auth-form">
                     <div className="input-group">
                         <User size={20} color="#6B7280" className="input-icon" />
-                        <input
-                            type="text"
-                            placeholder="Full Name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            className="auth-input"
-                        />
+                        <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} required className="auth-input" />
                     </div>
 
                     <div className="input-group">
                         <Mail size={20} color="#6B7280" className="input-icon" />
-                        <input
-                            type="email"
-                            placeholder="Email address"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="auth-input"
-                        />
+                        <input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} required className="auth-input" />
                     </div>
 
                     <div className="input-group">
                         <Lock size={20} color="#6B7280" className="input-icon" />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="auth-input"
-                        />
+                        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className="auth-input" />
                     </div>
 
                     <button type="submit" className="auth-button">
@@ -64,7 +56,10 @@ const Register = () => {
                 </form>
 
                 <p className="auth-footer">
-                    Already have an account? <a href="/login" className="auth-link">Sign In</a>
+                    Already have an account?{" "}
+                    <a href="/login" className="auth-link">
+                        Sign In
+                    </a>
                 </p>
             </div>
         </div>

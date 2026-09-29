@@ -1,5 +1,4 @@
 const User = require("../models/User");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
@@ -14,9 +13,9 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.body.email, name: req.body.name });
+        const user = await User.findOne({ email: req.body.email});
         if (!user || !user.comparePassword(req.body.password)) {
-            throw new Error("Invalid username or password or name");
+            throw new Error("Invalid email or password");
         }
         const token = jwt.sign({ userEmail: user.email }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_EXPIRES_IN });
         res.json({ token });

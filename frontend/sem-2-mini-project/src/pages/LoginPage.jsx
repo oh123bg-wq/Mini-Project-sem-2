@@ -1,14 +1,42 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LogIn, Mail, Lock } from 'lucide-react';
 import '../assets/css/LoginPage.css';
+import api from "../utils/api";
+import { useNavigate } from 'react-router';
 
-const Login = () => {
+const Login = ({ setUser }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        const userToken = localStorage.getItem("token");
+        console.log(userToken);
+        if (userToken !== null) navigate("/cheatsheet");
+    }, []);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Login submitted:", { email, password });
+
+        // 💡 Add your login / authentication logic here
+        console.log("Form submitted:", { email, password });
+        try {
+            const response = await api.post("/users/login", {
+                email,
+                password,
+            });
+            localStorage.setItem("token", response.data.token);
+
+            const userData = response.data.user || { email: email, name: email.split('@')[0], role: 'user' };
+            localStorage.setItem("user", JSON.stringify(userData));
+            
+            if (setUser) setUser(userData);
+            navigate("/cheatsheet");
+            console.log(response.data);
+            alert("Login Successful!");
+        } catch (error) {
+            console.log("Login Error: ", error);
+        }
     };
 
     return (
