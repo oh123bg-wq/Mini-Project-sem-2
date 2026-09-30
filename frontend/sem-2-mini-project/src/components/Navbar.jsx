@@ -111,7 +111,7 @@ const Navbar = ({ user, onLogout }) => {
                         <li className="nav-item">
                             <NavLink 
                                 className={({ isActive }) => `nav-link d-flex align-items-center gap-1 ${isActive ? 'active fw-bold' : ''}`} 
-                                to="/class-notes"
+                                to="/classnotes"
                             >
                                 <BookOpen size={16} /> Class Notes
                             </NavLink>
@@ -119,13 +119,13 @@ const Navbar = ({ user, onLogout }) => {
                         <li className="nav-item">
                             <NavLink 
                                 className={({ isActive }) => `nav-link d-flex align-items-center gap-1 ${isActive ? 'active fw-bold' : ''}`} 
-                                to="/code-notes"
+                                to="/codenotes"
                             >
                                 <Code size={16} /> Code Snippets
                             </NavLink>
                         </li>
 
-                        {/* 🔒 仅当用户存在且 role 为 admin 时才渲染该菜单 */}
+                        {/* 仅当用户存在且 role 为 admin 时才渲染该菜单 */}
                         {user && user.role === 'admin' && (
                             <li className="nav-item">
                                 <NavLink 

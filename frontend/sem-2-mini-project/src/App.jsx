@@ -5,6 +5,8 @@ import Login from "./pages/LoginPage";
 import Home from "./pages/HomePage";
 import Cheatsheet from "./pages/CheatsheetPage";
 import Navbar from "./components/Navbar";
+import ClassNotes from "./pages/ClassNotesPage";
+import CodeNotes from "./pages/CodeNotesPage";
 
 function App() {
     // 初始化 user 状态（可以从 localStorage 读取）
@@ -30,6 +32,8 @@ function App() {
                     <Route path="/login" element={<Login setUser={setUser} />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/cheatsheet" element={<Cheatsheet />} />
+                    <Route path="/classnotes" element={<ClassNotes />} />
+                    <Route path="/codenotes" element={<CodeNotes />} />
                 </Routes>
             </BrowserRouter>
         </>

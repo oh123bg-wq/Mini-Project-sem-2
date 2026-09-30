@@ -5,7 +5,7 @@ const HomePage = () => {
     return (
         <div className="homepage-container">
             {/* Navigation Bar */}
-            <nav className="homepage-navbar">
+            {/* <nav className="homepage-navbar">
                 <div className="logo-group">
                     <BookOpen size={28} color="#4F46E5" />
                     <span className="logo-text">DevNotes</span>
@@ -14,14 +14,14 @@ const HomePage = () => {
                     <a href="/login" className="btn-login">Sign In</a>
                     <a href="/register" className="btn-register">Get Started</a>
                 </div>
-            </nav>
+            </nav> */}
 
             {/* Hero Section */}
             <section className="hero-section">
-                <div className="hero-badge">
+                {/* <div className="hero-badge">
                     <Zap size={14} color="#4F46E5" />
                     <span>The Ultimate Note Application for Developers</span>
-                </div>
+                </div> */}
                 <h1 className="hero-title">
                     Organize Your Code, Notes & <br />
                     <span>Cheatsheets in One Place</span>
@@ -31,7 +31,7 @@ const HomePage = () => {
                 </p>
                 <div className="hero-cta">
                     <a href="/register" className="cta-primary">
-                        Start For Free <ArrowRight size={18} />
+                        Register <ArrowRight size={18} />
                     </a>
                     <a href="/login" className="cta-secondary">
                         Existing User? Sign In
