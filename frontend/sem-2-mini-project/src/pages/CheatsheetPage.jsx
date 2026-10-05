@@ -1,43 +1,28 @@
-import { useState } from 'react';
-import { Terminal, Copy, Check, Plus, Pin, Trash2, Tag } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Copy, Check, Plus, Pin, Trash2, Tag, Edit } from 'lucide-react';
+import api from '../utils/api';
+import CheatsheetModal from '../components/CheatsheetModal';
 import '../assets/css/CheatsheetPage.css';
 
 const CheatsheetPage = () => {
-    // 静态测试数据
-    const [cheatsheets, setCheatsheets] = useState([
-        {
-            _id: '1',
-            title: 'Git Commands',
-            category: 'DevOps',
-            isPinned: true,
-            commands: [
-                { command: 'git commit -m "feat: add user api"', desc: 'Commit changes with message' },
-                { command: 'git checkout -b feature/login', desc: 'Create and switch branch' }
-            ]
-        },
-        {
-            _id: '2',
-            title: 'Array Methods',
-            category: 'JavaScript',
-            isPinned: false,
-            commands: [
-                { command: 'const active = items.filter(i => i.isActive);', desc: 'Filter active items' }
-            ]
-        },
-        {
-            _id: '3',
-            title: 'Flexbox Center',
-            category: 'CSS',
-            isPinned: false,
-            commands: [
-                { command: 'display: flex;\njustify-content: center;\nalign-items: center;', desc: 'Center element' }
-            ]
-        }
-    ]);
-
+    const [cheatsheets, setCheatsheets] = useState([]);
     const [copiedId, setCopiedId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({ title: '', category: '', command: '', desc: '' });
+    const [editingId, setEditingId] = useState(null);
+
+    const fetchCheatsheets = async () => {
+        try {
+            const res = await api.get('/cheatsheets');
+            setCheatsheets(res.data);
+        } catch (err) {
+            console.error('Failed to fetch cheatsheets:', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchCheatsheets();
+    }, []);
 
     const handleCopy = (text, id) => {
         navigator.clipboard.writeText(text);
@@ -45,28 +30,62 @@ const CheatsheetPage = () => {
         setTimeout(() => setCopiedId(null), 2000);
     };
 
-    const handleTogglePin = (id) => {
-        setCheatsheets(cheatsheets.map(item => 
-            item._id === id ? { ...item, isPinned: !item.isPinned } : item
-        ));
+    const handleTogglePin = async (id) => {
+        try {
+            const res = await api.patch(`/cheatsheets/${id}/pin`);
+            setCheatsheets(cheatsheets.map(item => item._id === id ? res.data : item));
+        } catch (err) {
+            console.error('Toggle pin failed:', err);
+        }
     };
 
-    const handleDelete = (id) => {
-        setCheatsheets(cheatsheets.filter(item => item._id !== id));
+    const handleDelete = async (id) => {
+        if (!window.confirm('Delete this cheatsheet?')) return;
+        try {
+            await api.delete(`/cheatsheets/${id}`);
+            setCheatsheets(cheatsheets.filter(item => item._id !== id));
+        } catch (err) {
+            console.error('Delete cheatsheet failed:', err);
+        }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const newItem = {
-            _id: Date.now().toString(),
-            title: formData.title,
-            category: formData.category,
-            isPinned: false,
-            commands: [{ command: formData.command, desc: formData.desc }]
-        };
-        setCheatsheets([newItem, ...cheatsheets]);
+    const handleEditClick = (item) => {
+        setFormData({ 
+            title: item.title, 
+            category: item.category, 
+            command: item.commands[0]?.command || '', 
+            desc: item.commands[0]?.desc || '' 
+        });
+        setEditingId(item._id);
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
         setShowModal(false);
+        setEditingId(null);
         setFormData({ title: '', category: '', command: '', desc: '' });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const payload = {
+                title: formData.title,
+                category: formData.category,
+                commands: [{ command: formData.command, desc: formData.desc }]
+            };
+            
+            if (editingId) {
+                const res = await api.put(`/cheatsheets/${editingId}`, payload);
+                setCheatsheets(cheatsheets.map(item => item._id === editingId ? res.data : item));
+            } else {
+                const res = await api.post('/cheatsheets', payload);
+                setCheatsheets([res.data, ...cheatsheets]);
+            }
+            handleCloseModal();
+        } catch (err) {
+            console.error('Submit failed:', err);
+        }
     };
 
     return (
@@ -89,7 +108,10 @@ const CheatsheetPage = () => {
                                 <Tag size={12} /> {item.category}
                             </span>
                             <div className="card-actions">
-                                <button onClick={() => handleTogglePin(item._id)} className={`action-btn ${item.isPinned ? 'active-pin' : ''}`}>
+                                <button onClick={() => handleEditClick(item)} className="action-btn text-primary">
+                                    <Edit size={16} />
+                                </button>
+                                <button onClick={() => handleTogglePin(item._id)} className={`action-btn ${item.isPinned ? "active-pin" : ""}`}>
                                     <Pin size={16} />
                                 </button>
                                 <button onClick={() => handleDelete(item._id)} className="action-btn delete">
@@ -105,8 +127,15 @@ const CheatsheetPage = () => {
                                 <div key={idx} className="command-block">
                                     <div className="command-header">
                                         <span className="desc-text">{cmd.desc}</span>
-                                        <button className="copy-btn" onClick={() => handleCopy(cmd.command, `${item._id}-${idx}`)}>
-                                            {copiedId === `${item._id}-${idx}` ? <Check size={14} color="#10B981" /> : <Copy size={14} />}
+                                        <button 
+                                            className="copy-btn" 
+                                            onClick={() => handleCopy(cmd.command, `${item._id}-${idx}`)}
+                                        >
+                                            {copiedId === `${item._id}-${idx}` ? (
+                                                <Check size={14} color="#10B981" />
+                                            ) : (
+                                                <Copy size={14} />
+                                            )}
                                         </button>
                                     </div>
                                     <pre className="command-code"><code>{cmd.command}</code></pre>
@@ -117,47 +146,14 @@ const CheatsheetPage = () => {
                 ))}
             </div>
 
-            {/* Modal */}
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-card">
-                        <h3>Create New Cheatsheet</h3>
-                        <form onSubmit={handleSubmit}>
-                            <input
-                                type="text"
-                                placeholder="Title (e.g. Git Basics)"
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                required
-                            />
-                            <input
-                                type="text"
-                                placeholder="Category (e.g. Git, React, Docker)"
-                                value={formData.category}
-                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                required
-                            />
-                            <input
-                                type="text"
-                                placeholder="Description (e.g. Commit changes)"
-                                value={formData.desc}
-                                onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
-                                required
-                            />
-                            <textarea
-                                placeholder="Command or Code"
-                                value={formData.command}
-                                onChange={(e) => setFormData({ ...formData, command: e.target.value })}
-                                required
-                            />
-                            <div className="modal-buttons">
-                                <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
-                                <button type="submit" className="primary-btn">Save</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <CheatsheetModal 
+                show={showModal}
+                onClose={handleCloseModal}
+                onSubmit={handleSubmit}
+                formData={formData}
+                setFormData={setFormData}
+                isEditing={!!editingId}
+            />
         </div>
     );
 };

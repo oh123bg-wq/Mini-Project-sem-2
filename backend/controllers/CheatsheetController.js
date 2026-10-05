@@ -14,7 +14,7 @@ exports.addNewCheatsheet = async (req, res) => {
     }
 };
 
-// 获取当前用户的所有 Cheatsheet（支持 Search & Filter）
+// 获取当前用户的所有 Cheatsheet（ Search & Filter）
 exports.getAllCheatsheets = async (req, res) => {
     try {
         const { search, category } = req.query; // 获取查询参数

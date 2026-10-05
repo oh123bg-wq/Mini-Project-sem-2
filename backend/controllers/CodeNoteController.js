@@ -14,7 +14,7 @@ exports.addNewNote = async (req, res) => {
     }
 };
 
-// 获取当前用户的所有代码笔记（支持 Search & Filter）
+// 获取当前用户的所有代码笔记（ Search & Filter）
 exports.getAllNotes = async (req, res) => {
     try {
         const { search, language } = req.query; // 获取查询参数

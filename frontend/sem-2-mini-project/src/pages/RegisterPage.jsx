@@ -1,25 +1,28 @@
 import { useState } from "react";
 import { UserPlus, User, Mail, Lock } from "lucide-react";
 import "../assets/css/RegisterPage.css";
-import axios from 'axios';
+import api from "../utils/api";
+import { useNavigate } from "react-router";
 
 const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // 💡 Add your login / authentication logic here
+        // Add your login / authentication logic here
         console.log("Register Form submitted:", { name, email, password });
         try {
-            const response = await axios.post("http://localhost:3000/users/register", {
+            const response = await api.post("/users/register", {
                 name,
                 email,
                 password,
             });
             console.log("Register successful: ", response.data);
             alert("Register Successful!");
+            navigate("/login");
         } catch (error) {
             console.log("Register Error: ", error);
         }

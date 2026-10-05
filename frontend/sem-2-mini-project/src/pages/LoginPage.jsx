@@ -18,7 +18,7 @@ const Login = ({ setUser }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // 💡 Add your login / authentication logic here
+        // Add your login / authentication logic here
         console.log("Form submitted:", { email, password });
         try {
             const response = await api.post("/users/login", {
@@ -29,7 +29,7 @@ const Login = ({ setUser }) => {
 
             const userData = response.data.user || { email: email, name: email.split('@')[0], role: 'user' };
             localStorage.setItem("user", JSON.stringify(userData));
-            
+
             if (setUser) setUser(userData);
             navigate("/cheatsheet");
             console.log(response.data);
