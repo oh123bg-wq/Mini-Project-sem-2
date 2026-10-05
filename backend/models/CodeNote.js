@@ -2,34 +2,38 @@ const mongoose = require('mongoose');
 
 const CodeNoteSchema = new mongoose.Schema(
     {
+        userEmail: { 
+            type: String, 
+            required: true 
+        },
         title: {
             type: String,
-            required: true,
+            required: true
         },
         language: {
             type: String,
-            required: true,
+            required: true
         },
         category: {
             type: String,
-            required: true,
+            required: true
         },
         tags: [
             {
-                type: String,
+                type: String
             },
         ],
         explanation: {
             type: String,
-            required: true,
+            required: true
         },
         codeSnippet: {
             type: String,
-            required: true,
+            required: true
         },
         isPinned: {
             type: Boolean,
-            default: false,
+            default: false
         },
     },
     { timestamps: true },

@@ -3,29 +3,33 @@ const mongoose = require('mongoose');
 const CommandItemSchema = new mongoose.Schema({
     command: {
         type: String,
-        required: true,
+        required: true
     },
     desc: {
         type: String,
-        required: true,
+        required: true
     },
 });
 
 const CheatsheetSchema = new mongoose.Schema(
     {
+        userEmail: { 
+            type: String, 
+            required: true 
+        },
         title: {
             type: String,
-            required: true,
+            required: true
         },
         category: {
             type: String,
-            required: true,
+            required: true
         },
         icon: {
             type: String,
-            default: "fa-solid fa-terminal",
+            default: "fa-solid fa-terminal"
         },
-        commands: [CommandItemSchema],
+        commands: [CommandItemSchema]
     },
     { timestamps: true },
 );

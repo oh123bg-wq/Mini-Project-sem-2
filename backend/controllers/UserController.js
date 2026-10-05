@@ -33,3 +33,36 @@ exports.getAllUsers = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+// 管理员删除指定用户
+exports.deleteUser = async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+        if (!user) return res.status(404).json({ error: "User not found." });
+        res.json({ message: "User deleted successfully." });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// 管理员更新用户信息 (Admin Edit User)
+exports.updateUser = async (req, res) => {
+    try {
+        // 从请求体中解构允许修改的字段（防止恶意修改密码等）
+        const { name, email, role } = req.body;
+        
+        // 查找并更新用户，{ new: true } 返回更新后的数据
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { name, email, role },
+            { new: true, runValidators: true }
+        ).select("-password"); // 排除密码字段
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+        res.json(user);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};

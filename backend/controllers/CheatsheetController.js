@@ -3,7 +3,10 @@ const Cheatsheet = require("../models/Cheatsheet");
 // 创建 Cheatsheet
 exports.addNewCheatsheet = async (req, res) => {
     try {
-        const cheatsheet = new Cheatsheet(req.body);
+        const cheatsheet = new Cheatsheet({
+            ...req.body,
+            userEmail: req.user.email 
+        });
         await cheatsheet.save();
         res.status(201).json(cheatsheet);
     } catch (error) {
@@ -11,11 +14,27 @@ exports.addNewCheatsheet = async (req, res) => {
     }
 };
 
-// 获取当前用户的所有 Cheatsheet
+// 获取当前用户的所有 Cheatsheet（支持 Search & Filter）
 exports.getAllCheatsheets = async (req, res) => {
     try {
-        const cheatsheets = await Cheatsheet.find({ userEmail: req.userEmail })
-            .sort({ isPinned: -1, updatedAt: -1 });
+        const { search, category } = req.query; // 获取查询参数
+        let query = { userEmail: req.user.email };
+
+        // Search 功能：模糊匹配 title，或者匹配数组内的 commands.command 和 commands.desc
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { 'commands.command': { $regex: search, $options: 'i' } },
+                { 'commands.desc': { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        // Filter 功能：根据分类过滤
+        if (category && category !== 'All') {
+            query.category = { $regex: category, $options: 'i' }; // 忽略大小写的分类匹配
+        }
+
+        const cheatsheets = await Cheatsheet.find(query).sort({ isPinned: -1, updatedAt: -1 });
         res.json(cheatsheets);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -25,7 +44,7 @@ exports.getAllCheatsheets = async (req, res) => {
 // 获取单条 Cheatsheet 详情
 exports.getCheatsheetById = async (req, res) => {
     try {
-        const cheatsheet = await Cheatsheet.findOne({ _id: req.params.id, userEmail: req.userEmail });
+        const cheatsheet = await Cheatsheet.findOne({ _id: req.params.id, userEmail: req.user.email });
         if (!cheatsheet) {
             return res.status(404).json({ error: "Cheatsheet not found." });
         }
@@ -39,7 +58,7 @@ exports.getCheatsheetById = async (req, res) => {
 exports.updateCheatsheet = async (req, res) => {
     try {
         const cheatsheet = await Cheatsheet.findOneAndUpdate(
-            { _id: req.params.id, userEmail: req.userEmail },
+            { _id: req.params.id, userEmail: req.user.email },
             req.body,
             { new: true, runValidators: true }
         );
@@ -55,7 +74,7 @@ exports.updateCheatsheet = async (req, res) => {
 // 切换 Pin 状态
 exports.togglePinCheatsheet = async (req, res) => {
     try {
-        const cheatsheet = await Cheatsheet.findOne({ _id: req.params.id, userEmail: req.userEmail });
+        const cheatsheet = await Cheatsheet.findOne({ _id: req.params.id, userEmail: req.user.email });
         if (!cheatsheet) {
             return res.status(404).json({ error: "Cheatsheet not found." });
         }
@@ -71,7 +90,7 @@ exports.togglePinCheatsheet = async (req, res) => {
 // 删除 Cheatsheet
 exports.deleteCheatsheet = async (req, res) => {
     try {
-        const cheatsheet = await Cheatsheet.findOneAndDelete({ _id: req.params.id, userEmail: req.userEmail });
+        const cheatsheet = await Cheatsheet.findOneAndDelete({ _id: req.params.id, userEmail: req.user.email });
         if (!cheatsheet) {
             return res.status(404).json({ error: "Cheatsheet not found or unauthorized." });
         }

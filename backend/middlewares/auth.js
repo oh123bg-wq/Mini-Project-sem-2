@@ -8,8 +8,18 @@ exports.authenticate = async (req, res, next) => {
         const user = await User.findOne({ email: decoded.userEmail });
         if (!user) throw new Error("No user found!");
         req.user = user;
+        req.userEmail = user.email;
         next();
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 }
+
+// 管理员权限判断中间件
+exports.requireAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).json({ error: "Access denied. Admin rights required." });
+    }
+};
