@@ -35,18 +35,6 @@ const CodeNotesPage = () => {
         setTimeout(() => setCopiedId(null), 2000);
     };
 
-    const handleCreateSnippet = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await api.post("/codeNotes", formData);
-            setSnippets([res.data, ...snippets]);
-            setShowModal(false);
-            setFormData({ title: "", language: "JavaScript", description: "", code: "" });
-        } catch (err) {
-            console.error("Create snippet failed:", err);
-        }
-    };
-
     const handleTogglePin = async (id) => {
         try {
             const res = await api.patch(`/codeNotes/${id}/pin`);
@@ -89,6 +77,17 @@ const CodeNotesPage = () => {
             console.error("Submit failed:", err);
         }
     };
+
+    const handleEditClick = (snippet) => {
+    setFormData({
+        title: snippet.title,
+        language: snippet.language,
+        description: snippet.description,
+        code: snippet.code,
+    });
+    setEditingId(snippet._id);
+    setShowModal(true);
+};
 
     return (
         <div className="container my-4">

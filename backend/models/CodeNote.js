@@ -23,11 +23,11 @@ const CodeNoteSchema = new mongoose.Schema(
                 type: String
             },
         ],
-        explanation: {
+        description: {
             type: String,
             required: true
         },
-        codeSnippet: {
+        code: {
             type: String,
             required: true
         },

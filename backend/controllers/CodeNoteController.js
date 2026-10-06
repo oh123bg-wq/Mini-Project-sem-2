@@ -41,30 +41,6 @@ exports.getAllNotes = async (req, res) => {
     }
 };
 
-exports.getAllNotes = async (req, res) => {
-    try {
-        const { search, subject } = req.query;
-        let query = { userEmail: req.user.email };
-
-        // 满足搜索条件 Requirement 3
-        if (search) {
-            query.$or = [
-                { title: { $regex: search, $options: 'i' } },
-                { bodyContent: { $regex: search, $options: 'i' } }
-            ];
-        }
-
-        if (subject && subject !== 'All') {
-            query.subject = subject;
-        }
-
-        const notes = await ClassNote.find(query).sort({ isPinned: -1, updatedAt: -1 });
-        res.json(notes);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
 // 获取单条代码笔记详情
 exports.getNoteById = async (req, res) => {
     try {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import { Routes, Route, Navigate, useLocation } from "react-router";
 import Navbar from "./components/Navbar";
 import Home from "./pages/HomePage";
 import Login from "./pages/LoginPage";
@@ -23,24 +23,35 @@ function App() {
         setUser(null); // 更新状态，Navbar 会自动刷成未登录样式
     };
 
+    const location = useLocation();
+    const hideNavbarPaths = ["/", "/login", "/register"];
+
     return (
         <>
-            <BrowserRouter>
+            {/* 只要当前路径不在 hideNavbarPaths 数组中，才渲染 Navbar */}
+            {!hideNavbarPaths.includes(location.pathname) && (
                 <Navbar user={user} onLogout={handleLogout} />
+            )}
 
-                <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login setUser={setUser} />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/classnotes" element={<ClassNotes />} />
-                <Route path="/codenotes" element={<CodeNotes />} />
-                <Route path="/cheatsheet" element={<Cheatsheet />} />
+            <Routes>
+                {/* Homepage: 已登录用户访问重定向到 /codenotes，未登录显示 Home */}
+                <Route path="/" element={user ? <Navigate to="/codenotes" /> : <Home />} />
+
+                {/* Login & Register: 已登录用户访问直接重定向到 /codenotes */}
+                <Route path="/login" element={user ? <Navigate to="/codenotes" /> : <Login setUser={setUser} />} />
+                <Route path="/register" element={user ? <Navigate to="/codenotes" /> : <Register />} />
+
+                {/* Protected Pages: 未登录用户访问统一重定向回 Homepage ("/") */}
+                <Route path="/classnotes" element={user ? <ClassNotes /> : <Navigate to="/" />} />
+                <Route path="/codenotes" element={user ? <CodeNotes /> : <Navigate to="/" />} />
+                <Route path="/cheatsheet" element={user ? <Cheatsheet /> : <Navigate to="/" />} />
+
+                {/* Admin Dashboard: 只有 role 为 'admin' 的已登录用户可访问，否则重定向回 Homepage ("/") */}
                 <Route 
                     path="/admin/dashboard" 
                     element={user && user.role === 'admin' ? <AdminDashboard /> : <Navigate to="/" />} 
                 />
-                </Routes>
-            </BrowserRouter>
+            </Routes>
         </>
     );
 }
