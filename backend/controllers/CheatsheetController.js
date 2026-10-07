@@ -34,7 +34,7 @@ exports.getAllCheatsheets = async (req, res) => {
             query.category = { $regex: category, $options: 'i' }; // 忽略大小写的分类匹配
         }
 
-        const cheatsheets = await Cheatsheet.find(query).sort({ isPinned: -1, updatedAt: -1 });
+        const cheatsheets = await Cheatsheet.find(query).sort({ updatedAt: -1 });
         res.json(cheatsheets);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -65,22 +65,6 @@ exports.updateCheatsheet = async (req, res) => {
         if (!cheatsheet) {
             return res.status(404).json({ error: "Cheatsheet not found or unauthorized." });
         }
-        res.json(cheatsheet);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-// 切换 Pin 状态
-exports.togglePinCheatsheet = async (req, res) => {
-    try {
-        const cheatsheet = await Cheatsheet.findOne({ _id: req.params.id, userEmail: req.user.email });
-        if (!cheatsheet) {
-            return res.status(404).json({ error: "Cheatsheet not found." });
-        }
-
-        cheatsheet.isPinned = !cheatsheet.isPinned;
-        await cheatsheet.save();
         res.json(cheatsheet);
     } catch (error) {
         res.status(400).json({ error: error.message });

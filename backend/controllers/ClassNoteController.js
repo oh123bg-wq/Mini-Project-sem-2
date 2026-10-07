@@ -72,7 +72,7 @@ exports.updateNote = async (req, res) => {
         const note = await ClassNote.findOneAndUpdate(
             { _id: req.params.id, userEmail: req.user.email },
             req.body,
-            { new: true }
+            { new: true, runValidators: true }
         );
 
         // 如果找不到符合条件且有权限的笔记
