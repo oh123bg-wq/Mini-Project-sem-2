@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Copy, Check, Plus, Pin, Trash2, Tag, Edit } from 'lucide-react';
+import { Copy, Check, Plus, Trash2, Tag, Edit } from 'lucide-react';
 import api from '../utils/api';
 import CheatsheetModal from '../components/CheatsheetModal';
 import '../assets/css/CheatsheetPage.css';
@@ -28,15 +28,6 @@ const CheatsheetPage = () => {
         navigator.clipboard.writeText(text);
         setCopiedId(id);
         setTimeout(() => setCopiedId(null), 2000);
-    };
-
-    const handleTogglePin = async (id) => {
-        try {
-            const res = await api.patch(`/cheatsheets/${id}/pin`);
-            setCheatsheets(cheatsheets.map(item => item._id === id ? res.data : item));
-        } catch (err) {
-            console.error('Toggle pin failed:', err);
-        }
     };
 
     const handleDelete = async (id) => {
@@ -110,9 +101,6 @@ const CheatsheetPage = () => {
                             <div className="card-actions">
                                 <button onClick={() => handleEditClick(item)} className="action-btn text-primary">
                                     <Edit size={16} />
-                                </button>
-                                <button onClick={() => handleTogglePin(item._id)} className={`action-btn ${item.isPinned ? "active-pin" : ""}`}>
-                                    <Pin size={16} />
                                 </button>
                                 <button onClick={() => handleDelete(item._id)} className="action-btn delete">
                                     <Trash2 size={16} />

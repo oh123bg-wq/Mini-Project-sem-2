@@ -1,5 +1,3 @@
-import React from 'react';
-
 const CodeNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEditing }) => {
     if (!show) return null;
 
@@ -14,11 +12,15 @@ const CodeNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEditi
                     <form onSubmit={onSubmit}>
                         <div className="modal-body">
                             <div className="row mb-3">
-                                <div className="col-md-8">
+                                <div className="col-md-5">
                                     <label className="form-label fw-semibold">Title</label>
                                     <input type="text" className="form-control" required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
                                 </div>
                                 <div className="col-md-4">
+                                    <label className="form-label fw-semibold">Category</label>
+                                    <input type="text" className="form-control" required placeholder="e.g. Frontend, Utility" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
+                                </div>
+                                <div className="col-md-3">
                                     <label className="form-label fw-semibold">Language</label>
                                     <select className="form-select" value={formData.language} onChange={e => setFormData({ ...formData, language: e.target.value })}>
                                         <option value="JavaScript">JavaScript</option>

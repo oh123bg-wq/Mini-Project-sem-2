@@ -1,16 +1,17 @@
-// src/pages/ClassNotesPage.jsx
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Search, Plus, Calendar, Tag, Trash2, Pin } from 'lucide-react';
+import { BookOpen, Search, Plus, Calendar, Tag, Trash2, Pin, Edit } from 'lucide-react';
 import api from '../utils/api';
-import ClassNoteModal from '../components/ClassNoteModal'; // 引入抽离后的 Modal 组件
+import ClassNoteModal from '../components/ClassNoteModal';
+import '../assets/css/ui.css';
 
 const ClassNotesPage = () => {
     const [notes, setNotes] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedSubject, setSelectedSubject] = useState('All');
     
-    // Modal 状态管理
+    // Modal & Editing State
     const [showModal, setShowModal] = useState(false);
+    const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({ 
         title: '', 
         subject: 'Computer Science', 
@@ -31,21 +32,41 @@ const ClassNotesPage = () => {
         fetchNotes();
     }, []);
 
-    const handleCreateNote = async (e) => {
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setEditingId(null);
+        setFormData({ title: '', subject: 'Computer Science', tags: '', bodyContent: '' });
+    };
+
+    const handleEditClick = (note) => {
+        setFormData({
+            title: note.title,
+            subject: note.subject,
+            tags: note.tags ? note.tags.join(', ') : '',
+            bodyContent: note.bodyContent
+        });
+        setEditingId(note._id);
+        setShowModal(true);
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const payload = {
                 ...formData,
-                tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : []
+                tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(Boolean) : []
             };
-            const res = await api.post('/classNotes', payload);
-            setNotes([res.data, ...notes]);
-            setShowModal(false);
-            setFormData({ title: '', subject: 'Computer Science', tags: '', bodyContent: '' });
+
+            if (editingId) {
+                const res = await api.put(`/classNotes/${editingId}`, payload);
+                setNotes(notes.map(n => n._id === editingId ? res.data : n));
+            } else {
+                const res = await api.post('/classNotes', payload);
+                setNotes([res.data, ...notes]);
+            }
+            handleCloseModal();
         } catch (err) {
-            console.error('Fetch Failed Status:', err.response?.status); // 打印 HTTP 状态码
-        console.error('Fetch Failed Message:', err.response?.data || err.message);
-            console.error('Create note failed:', err);
+            console.error('Submit failed:', err);
         }
     };
 
@@ -68,96 +89,100 @@ const ClassNotesPage = () => {
         }
     };
 
-    const filteredNotes = notes.filter(note => {
-        const matchesSearch = note.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              note.bodyContent.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesSubject = selectedSubject === 'All' || note.subject === selectedSubject;
-        return matchesSearch && matchesSubject;
-    });
+    // 过滤 + 置顶项优先排序
+    const filteredNotes = notes
+        .filter(note => {
+            const matchesSearch = note.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                  note.bodyContent.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSubject = selectedSubject === 'All' || note.subject === selectedSubject;
+            return matchesSearch && matchesSubject;
+        })
+        .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
 
     return (
-        <div className="container my-4">
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div className="note-page-container">
+            {/* Header */}
+            <header className="page-header">
                 <div>
-                    <h2 className="fw-bold d-flex align-items-center gap-2 mb-1">
-                        <BookOpen color="#4F46E5" size={28} />
-                        <span>Class Notes</span>
-                    </h2>
-                    <p className="text-muted mb-0">Organize and review your lecture summaries and study topics.</p>
+                    <h2>📚 Class Notes</h2>
+                    <p className="subtitle">Organize and review your lecture summaries and study topics.</p>
                 </div>
-                <button className="btn btn-primary d-flex align-items-center gap-2 px-3" onClick={() => setShowModal(true)}>
-                    <Plus size={18} />
-                    <span>New Class Note</span>
+                <button className="primary-btn" onClick={() => setShowModal(true)}>
+                    <Plus size={18} /> New Class Note
                 </button>
-            </div>
+            </header>
 
-            <div className="row g-3 mb-4">
-                <div className="col-md-8">
-                    <div className="input-group">
-                        <span className="input-group-text bg-white border-end-0">
-                            <Search size={18} className="text-muted" />
-                        </span>
-                        <input
-                            type="text"
-                            className="form-control border-start-0 ps-0"
-                            placeholder="Search class notes..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+            {/* Filter Toolbar */}
+            <div className="toolbar-container mb-4">
+                <div className="row g-3">
+                    <div className="col-md-8">
+                        <div className="input-group">
+                            <span className="input-group-text bg-white border-end-0">
+                                <Search size={18} className="text-muted" />
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control border-start-0 ps-0"
+                                placeholder="Search class notes..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="col-md-4">
+                        <select className="form-select" value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)}>
+                            <option value="All">All Subjects</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="System Design">System Design</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Database">Database</option>
+                        </select>
                     </div>
                 </div>
-                <div className="col-md-4">
-                    <select className="form-select" value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)}>
-                        <option value="All">All Subjects</option>
-                        <option value="Computer Science">Computer Science</option>
-                        <option value="System Design">System Design</option>
-                        <option value="Web Development">Web Development</option>
-                        <option value="Database">Database</option>
-                    </select>
-                </div>
             </div>
 
-            {/* 卡片列表 */}
-            <div className="row g-4">
+            {/* Grid List */}
+            <div className="cheatsheet-grid">
                 {filteredNotes.map((note) => (
-                    <div key={note._id} className="col-md-6 col-lg-4">
-                        <div className={`card h-100 shadow-sm border-0 bg-white ${note.isPinned ? 'border-start border-primary border-4' : ''}`}>
-                            <div className="card-body d-flex flex-column">
-                                <div className="d-flex justify-content-between align-items-start mb-2">
-                                    <span className="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill d-flex align-items-center gap-1">
-                                        <Tag size={12} />
-                                        {note.subject}
-                                    </span>
-                                    <div className="d-flex gap-2">
-                                        <button className={`btn btn-sm btn-link p-0 ${note.isPinned ? 'text-primary' : 'text-muted'}`} onClick={() => handleTogglePin(note._id)}>
-                                            <Pin size={16} />
-                                        </button>
-                                        <button className="btn btn-sm btn-link text-danger p-0" onClick={() => handleDelete(note._id)}>
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                </div>
-                                <h5 className="card-title fw-bold text-dark">{note.title}</h5>
-                                <p className="card-text text-muted flex-grow-1 fs-6">
-                                    {note.bodyContent?.length > 110 ? note.bodyContent.substring(0, 110) + '...' : note.bodyContent}
-                                </p>
-                                <div className="d-flex align-items-center gap-1 text-muted fs-7 mt-3">
-                                    <Calendar size={14} />
-                                    <span>Updated: {new Date(note.updatedAt).toLocaleDateString()}</span>
-                                </div>
+                    <div className={`cheatsheet-card ${note.isPinned ? 'border-start border-primary border-4' : ''}`} key={note._id}>
+                        <div className="card-top">
+                            <span className="category-badge">
+                                <Tag size={12} />
+                                {note.subject}
+                            </span>
+                            <div className="d-flex gap-1">
+                                <button className={`action-btn ${note.isPinned ? 'text-primary' : ''}`} onClick={() => handleTogglePin(note._id)} title="Pin Note">
+                                    <Pin size={16} />
+                                </button>
+                                <button className="action-btn" onClick={() => handleEditClick(note)} title="Edit Note">
+                                    <Edit size={16} />
+                                </button>
+                                <button className="action-btn delete" onClick={() => handleDelete(note._id)} title="Delete Note">
+                                    <Trash2 size={16} />
+                                </button>
                             </div>
+                        </div>
+
+                        <h3 className="card-title">{note.title}</h3>
+                        <p className="text-muted flex-grow-1 fs-6 mb-3" style={{ lineHeight: '1.6' }}>
+                            {note.bodyContent?.length > 120 ? note.bodyContent.substring(0, 120) + '...' : note.bodyContent}
+                        </p>
+
+                        <div className="d-flex align-items-center gap-1 text-muted fs-7 pt-2 border-top">
+                            <Calendar size={14} />
+                            <span>Updated: {new Date(note.updatedAt).toLocaleDateString()}</span>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* 调用抽离后的 Modal 组件 */}
             <ClassNoteModal 
                 show={showModal}
-                onClose={() => setShowModal(false)}
-                onSubmit={handleCreateNote}
+                onClose={handleCloseModal}
+                onSubmit={handleSubmit}
                 formData={formData}
                 setFormData={setFormData}
+                isEditing={!!editingId}
             />
         </div>
     );

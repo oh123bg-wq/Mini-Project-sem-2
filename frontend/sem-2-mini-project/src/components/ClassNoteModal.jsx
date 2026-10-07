@@ -1,8 +1,6 @@
-// src/components/ClassNoteModal.jsx
 import React from 'react';
 
-const ClassNoteModal = ({ show, onClose, onSubmit, formData, setFormData }) => {
-    // 如果 show 为 false，直接不渲染任何 DOM
+const ClassNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEditing }) => {
     if (!show) return null;
 
     return (
@@ -10,7 +8,7 @@ const ClassNoteModal = ({ show, onClose, onSubmit, formData, setFormData }) => {
             <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content border-0 shadow">
                     <div className="modal-header bg-primary text-white">
-                        <h5 className="modal-title">New Class Note</h5>
+                        <h5 className="modal-title">{isEditing ? 'Edit Class Note' : 'New Class Note'}</h5>
                         <button 
                             type="button" 
                             className="btn-close btn-close-white" 
@@ -68,7 +66,7 @@ const ClassNoteModal = ({ show, onClose, onSubmit, formData, setFormData }) => {
                                 Cancel
                             </button>
                             <button type="submit" className="btn btn-primary">
-                                Save Note
+                                {isEditing ? 'Update Note' : 'Save Note'}
                             </button>
                         </div>
                     </form>
