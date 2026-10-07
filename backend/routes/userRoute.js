@@ -15,4 +15,6 @@ router.delete("/:id", auth.authenticate, auth.requireAdmin, userController.delet
 
 router.put("/:id", auth.authenticate, auth.requireAdmin, userController.updateUser);
 
+router.post("/", auth.authenticate, auth.requireAdmin, userController.createUser);
+
 module.exports = router;
