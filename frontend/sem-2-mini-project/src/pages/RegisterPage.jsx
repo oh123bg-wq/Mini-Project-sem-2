@@ -13,14 +13,14 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         // Add your login / authentication logic here
-        console.log("Register Form submitted:", { name, email, password });
+        // console.log("Register Form submitted:", { name, email, password });
         try {
             const response = await api.post("/users/register", {
                 name,
                 email,
                 password,
             });
-            console.log("Register successful: ", response.data);
+            // console.log("Register successful: ", response.data);
             alert("Register Successful!");
             navigate("/login");
         } catch (error) {

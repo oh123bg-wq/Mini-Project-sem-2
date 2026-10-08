@@ -1,5 +1,3 @@
-import React from 'react';
-
 const ClassNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEditing }) => {
     if (!show) return null;
 
@@ -23,7 +21,8 @@ const ClassNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEdit
                                     type="text" 
                                     className="form-control" 
                                     required 
-                                    value={formData.title} 
+                                    placeholder="e.g. React Hooks Explanation"
+                                    value={formData.title || ''} 
                                     onChange={e => setFormData({ ...formData, title: e.target.value })} 
                                 />
                             </div>
@@ -31,7 +30,7 @@ const ClassNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEdit
                                 <label className="form-label fw-semibold">Subject</label>
                                 <select 
                                     className="form-select" 
-                                    value={formData.subject} 
+                                    value={formData.subject || 'Computer Science'} 
                                     onChange={e => setFormData({ ...formData, subject: e.target.value })}
                                 >
                                     <option value="Computer Science">Computer Science</option>
@@ -45,8 +44,8 @@ const ClassNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEdit
                                 <input 
                                     type="text" 
                                     className="form-control" 
-                                    placeholder="react, hooks" 
-                                    value={formData.tags} 
+                                    placeholder="e.g. react, hooks, state" 
+                                    value={formData.tags || ''} 
                                     onChange={e => setFormData({ ...formData, tags: e.target.value })} 
                                 />
                             </div>
@@ -56,7 +55,8 @@ const ClassNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEdit
                                     className="form-control" 
                                     rows="4" 
                                     required 
-                                    value={formData.bodyContent} 
+                                    placeholder="Write your note content or detailed summary here..."
+                                    value={formData.bodyContent || ''} 
                                     onChange={e => setFormData({ ...formData, bodyContent: e.target.value })}
                                 ></textarea>
                             </div>

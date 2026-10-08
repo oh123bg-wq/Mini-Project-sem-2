@@ -8,8 +8,15 @@ const CheatsheetPage = () => {
     const [cheatsheets, setCheatsheets] = useState([]);
     const [copiedId, setCopiedId] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [formData, setFormData] = useState({ title: '', category: '', command: '', desc: '' });
     const [editingId, setEditingId] = useState(null);
+
+    const initialForm = {
+        title: '',
+        category: '',
+        commands: [{ command: '', desc: '' }]
+    };
+
+    const [formData, setFormData] = useState(initialForm);
 
     const fetchCheatsheets = async () => {
         try {
@@ -44,8 +51,9 @@ const CheatsheetPage = () => {
         setFormData({ 
             title: item.title, 
             category: item.category, 
-            command: item.commands[0]?.command || '', 
-            desc: item.commands[0]?.desc || '' 
+            commands: item.commands && item.commands.length > 0 
+                ? item.commands.map(c => ({ command: c.command, desc: c.desc || '' })) 
+                : [{ command: '', desc: '' }]
         });
         setEditingId(item._id);
         setShowModal(true);
@@ -54,7 +62,7 @@ const CheatsheetPage = () => {
     const handleCloseModal = () => {
         setShowModal(false);
         setEditingId(null);
-        setFormData({ title: '', category: '', command: '', desc: '' });
+        setFormData(initialForm);
     };
 
     const handleSubmit = async (e) => {
@@ -63,7 +71,7 @@ const CheatsheetPage = () => {
             const payload = {
                 title: formData.title,
                 category: formData.category,
-                commands: [{ command: formData.command, desc: formData.desc }]
+                commands: formData.commands
             };
             
             if (editingId) {
@@ -108,13 +116,13 @@ const CheatsheetPage = () => {
                             </div>
                         </div>
 
-                        <h3 className="card-title">{item.title}</h3>
+                        <h3 className="card-title text-break">{item.title}</h3>
 
                         <div className="commands-list">
                             {item.commands?.map((cmd, idx) => (
                                 <div key={idx} className="command-block">
                                     <div className="command-header">
-                                        <span className="desc-text">{cmd.desc}</span>
+                                        <span className="desc-text text-break">{cmd.desc}</span>
                                         <button 
                                             className="copy-btn" 
                                             onClick={() => handleCopy(cmd.command, `${item._id}-${idx}`)}
@@ -126,7 +134,7 @@ const CheatsheetPage = () => {
                                             )}
                                         </button>
                                     </div>
-                                    <pre className="command-code"><code>{cmd.command}</code></pre>
+                                    <pre className="command-code text-break"><code>{cmd.command}</code></pre>
                                 </div>
                             ))}
                         </div>

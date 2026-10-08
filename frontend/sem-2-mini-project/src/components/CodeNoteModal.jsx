@@ -14,15 +14,33 @@ const CodeNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEditi
                             <div className="row mb-3">
                                 <div className="col-md-5">
                                     <label className="form-label fw-semibold">Title</label>
-                                    <input type="text" className="form-control" required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        required 
+                                        placeholder="e.g. useState Hook Example"
+                                        value={formData.title || ''} 
+                                        onChange={e => setFormData({ ...formData, title: e.target.value })} 
+                                    />
                                 </div>
                                 <div className="col-md-4">
                                     <label className="form-label fw-semibold">Category</label>
-                                    <input type="text" className="form-control" required placeholder="e.g. Frontend, Utility" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        required 
+                                        placeholder="e.g. Frontend, Utility" 
+                                        value={formData.category || ''} 
+                                        onChange={e => setFormData({ ...formData, category: e.target.value })} 
+                                    />
                                 </div>
                                 <div className="col-md-3">
                                     <label className="form-label fw-semibold">Language</label>
-                                    <select className="form-select" value={formData.language} onChange={e => setFormData({ ...formData, language: e.target.value })}>
+                                    <select 
+                                        className="form-select" 
+                                        value={formData.language || 'JavaScript'} 
+                                        onChange={e => setFormData({ ...formData, language: e.target.value })}
+                                    >
                                         <option value="JavaScript">JavaScript</option>
                                         <option value="Node.js">Node.js</option>
                                         <option value="Python">Python</option>
@@ -34,11 +52,24 @@ const CodeNoteModal = ({ show, onClose, onSubmit, formData, setFormData, isEditi
                             </div>
                             <div className="mb-3">
                                 <label className="form-label fw-semibold">Description</label>
-                                <input type="text" className="form-control" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+                                <input 
+                                    type="text" 
+                                    className="form-control" 
+                                    placeholder="Brief description of what this code does..."
+                                    value={formData.description || ''} 
+                                    onChange={e => setFormData({ ...formData, description: e.target.value })} 
+                                />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label fw-semibold">Code</label>
-                                <textarea className="form-control font-monospace" rows="6" required value={formData.code} onChange={e => setFormData({ ...formData, code: e.target.value })}></textarea>
+                                <textarea 
+                                    className="form-control font-monospace" 
+                                    rows="6" 
+                                    required 
+                                    placeholder="Paste or write code snippet here..."
+                                    value={formData.code || ''} 
+                                    onChange={e => setFormData({ ...formData, code: e.target.value })}
+                                ></textarea>
                             </div>
                         </div>
                         <div className="modal-footer bg-light">

@@ -11,8 +11,8 @@ const Login = ({ setUser }) => {
 
     useEffect(() => {
         const userToken = localStorage.getItem("token");
-        console.log(userToken);
-        if (userToken !== null) navigate("/cheatsheet");
+        // console.log(userToken);
+        if (userToken !== null) navigate("/codenotes");
     }, []);
 
     const handleSubmit = async (e) => {
@@ -31,7 +31,7 @@ const Login = ({ setUser }) => {
             localStorage.setItem("user", JSON.stringify(userData));
 
             if (setUser) setUser(userData);
-            navigate("/cheatsheet");
+            navigate("/codenotes");
             console.log(response.data);
             alert("Login Successful!");
         } catch (error) {

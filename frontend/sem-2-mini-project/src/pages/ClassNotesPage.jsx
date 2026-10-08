@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BookOpen, Search, Plus, Calendar, Tag, Trash2, Pin, Edit } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Plus, Calendar, Tag, Trash2, Pin, Edit } from 'lucide-react';
 import api from '../utils/api';
 import ClassNoteModal from '../components/ClassNoteModal';
 import '../assets/css/ui.css';
@@ -163,8 +163,8 @@ const ClassNotesPage = () => {
                             </div>
                         </div>
 
-                        <h3 className="card-title">{note.title}</h3>
-                        <p className="text-muted flex-grow-1 fs-6 mb-3" style={{ lineHeight: '1.6' }}>
+                        <h3 className="card-title text-break">{note.title}</h3>
+                        <p className="text-muted flex-grow-1 fs-6 mb-3 text-break" style={{ lineHeight: '1.6' }}>
                             {note.bodyContent?.length > 120 ? note.bodyContent.substring(0, 120) + '...' : note.bodyContent}
                         </p>
 

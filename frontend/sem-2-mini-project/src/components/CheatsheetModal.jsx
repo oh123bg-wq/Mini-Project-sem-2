@@ -1,92 +1,124 @@
-import React from 'react';
+import { Plus, Trash2 } from 'lucide-react';
 
-const UserModal = ({ show, onClose, onSubmit, formData, setFormData, isEditMode }) => {
+const CheatsheetModal = ({ show, onClose, onSubmit, formData, setFormData, isEditing }) => {
     if (!show) return null;
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    // 更新特定索引位置的 command 或 desc
+    const handleCommandChange = (index, field, value) => {
+        const updatedCommands = [...formData.commands];
+        updatedCommands[index] = { 
+            ...updatedCommands[index], 
+            [field]: value 
+        };
+        setFormData({ ...formData, commands: updatedCommands });
+    };
+
+    // 添加新的 Command 行
+    const handleAddCommand = () => {
+        setFormData({
+            ...formData,
+            commands: [...formData.commands, { command: '', desc: '' }]
+        });
+    };
+
+    // 删除指定索引的 Command 行
+    const handleRemoveCommand = (index) => {
+        const updatedCommands = formData.commands.filter((_, i) => i !== index);
+        setFormData({ ...formData, commands: updatedCommands });
     };
 
     return (
-        /* 原生 Bootstrap Modal 遮罩 */
-        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-            <div className="modal-dialog modal-dialog-centered">
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog modal-lg modal-dialog-centered">
                 <div className="modal-content border-0 shadow">
-                    
-                    {/* 原生 Bootstrap 蓝色 Header */}
                     <div className="modal-header bg-primary text-white">
-                        <h5 className="modal-title fw-bold">
-                            {isEditMode ? 'Edit User' : 'New User'}
-                        </h5>
+                        <h5 className="modal-title">{isEditing ? 'Edit Cheatsheet' : 'New Cheatsheet'}</h5>
                         <button type="button" className="btn-close btn-close-white" onClick={onClose}></button>
                     </div>
-
                     <form onSubmit={onSubmit}>
-                        <div className="modal-body">
-                            <div className="mb-3">
-                                <label className="form-label fw-medium">Name</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    className="form-control"
-                                    placeholder="Enter user name"
-                                    value={formData.name || ''}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label fw-medium">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    className="form-control"
-                                    placeholder="Enter email address"
-                                    value={formData.email || ''}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="row g-3">
-                                <div className="col-md-7">
-                                    <label className="form-label fw-medium">
-                                        Password {isEditMode && <small className="text-muted">(Optional)</small>}
-                                    </label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        className="form-control"
-                                        placeholder={isEditMode ? "Leave blank to keep" : "Enter password"}
-                                        value={formData.password || ''}
-                                        onChange={handleChange}
-                                        required={!isEditMode}
+                        <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                            <div className="row g-3 mb-3">
+                                <div className="col-md-6">
+                                    <label className="form-label fw-semibold">Title</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        required 
+                                        placeholder="e.g. Git Version Control Commands"
+                                        value={formData.title || ''} 
+                                        onChange={e => setFormData({ ...formData, title: e.target.value })} 
                                     />
                                 </div>
-                                <div className="col-md-5">
-                                    <label className="form-label fw-medium">Role</label>
-                                    <select
-                                        name="role"
-                                        className="form-select"
-                                        value={formData.role || 'user'}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="user">User</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
+                                <div className="col-md-6">
+                                    <label className="form-label fw-semibold">Category</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-control" 
+                                        required 
+                                        placeholder="e.g. Git & GitHub"
+                                        value={formData.category || ''} 
+                                        onChange={e => setFormData({ ...formData, category: e.target.value })} 
+                                    />
                                 </div>
                             </div>
-                        </div>
 
-                        
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={onClose}>
-                                Cancel
-                            </button>
-                            <button type="submit" className="btn btn-primary">
-                                Save
-                            </button>
+                            <div className="d-flex justify-content-between align-items-center mb-2 border-top pt-3">
+                                <label className="form-label fw-bold m-0">Commands / Code Snippets</label>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+                                    onClick={handleAddCommand}
+                                >
+                                    <Plus size={16} /> Add Command
+                                </button>
+                            </div>
+
+                            {formData.commands?.map((cmd, idx) => (
+                                <div key={idx} className="p-3 mb-3 border rounded bg-light position-relative">
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                        <span className="badge bg-secondary"># {idx + 1}</span>
+                                        {formData.commands.length > 1 && (
+                                            <button 
+                                                type="button" 
+                                                className="btn btn-sm btn-outline-danger border-0 p-1"
+                                                onClick={() => handleRemoveCommand(idx)}
+                                                title="Remove command"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Description 放在前面 */}
+                                    <div className="mb-2">
+                                        <label className="form-label small text-muted mb-1">Description</label>
+                                        <input 
+                                            type="text" 
+                                            className="form-control form-control-sm" 
+                                            placeholder="Create & switch to new branch"
+                                            value={cmd.desc || ''} 
+                                            onChange={e => handleCommandChange(idx, 'desc', e.target.value)}
+                                        />
+                                    </div>
+
+                                    {/* Command / Code 放在后面 */}
+                                    <div>
+                                        <label className="form-label small text-muted mb-1">Command / Code</label>
+                                        <textarea 
+                                            className="form-control font-monospace" 
+                                            rows="2" 
+                                            required 
+                                            placeholder="git checkout -b feature/new-idea"
+                                            value={cmd.command || ''} 
+                                            onChange={e => handleCommandChange(idx, 'command', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="modal-footer bg-light">
+                            <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+                            <button type="submit" className="btn btn-primary">{isEditing ? 'Update Cheatsheet' : 'Save Cheatsheet'}</button>
                         </div>
                     </form>
                 </div>
@@ -95,4 +127,4 @@ const UserModal = ({ show, onClose, onSubmit, formData, setFormData, isEditMode 
     );
 };
 
-export default UserModal;
+export default CheatsheetModal;

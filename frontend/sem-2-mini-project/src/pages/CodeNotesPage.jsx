@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Code, Search, Plus, Copy, Check, Terminal, Trash2, Pin, Edit } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Plus, Copy, Check, Terminal, Trash2, Pin, Edit } from "lucide-react";
 import api from "../utils/api";
 import CodeNoteModal from "../components/CodeNoteModal";
 import '../assets/css/ui.css';
@@ -190,8 +190,8 @@ const CodeNotesPage = () => {
                             </div>
                         </div>
 
-                        <h3 className="card-title">{snippet.title}</h3>
-                        {snippet.description && <p className="subtitle mb-2">{snippet.description}</p>}
+                        <h3 className="card-title text-break">{snippet.title}</h3>
+                        {snippet.description && <p className="subtitle mb-2 text-break">{snippet.description}</p>}
 
                         {/* Terminal Style Code Container */}
                         <div className="command-block mt-auto">
@@ -203,7 +203,7 @@ const CodeNotesPage = () => {
                                     {copiedId === snippet._id ? <Check size={14} color="#10B981" /> : <Copy size={14} />}
                                 </button>
                             </div>
-                            <pre className="command-code"><code>{snippet.code}</code></pre>
+                            <pre className="command-code text-break"><code>{snippet.code}</code></pre>
                         </div>
                     </div>
                 ))}

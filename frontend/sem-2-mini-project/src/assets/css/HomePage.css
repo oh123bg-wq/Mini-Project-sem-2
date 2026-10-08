@@ -6,79 +6,12 @@
     color: #111827;
 }
 
-/* 1. Navigation Bar */
-.homepage-navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.2rem 3rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.logo-group {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-}
-
-.logo-text {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #111827;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.btn-login {
-    text-decoration: none;
-    color: #374151;
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    transition: color 0.2s;
-}
-
-.btn-login:hover {
-    color: #4F46E5;
-}
-
-.btn-register {
-    text-decoration: none;
-    background-color: #4F46E5;
-    color: #ffffff;
-    font-weight: 600;
-    padding: 0.5rem 1.2rem;
-    border-radius: 8px;
-    transition: background-color 0.2s;
-}
-
-.btn-register:hover {
-    background-color: #4338CA;
-}
-
-/* 2. Hero Section */
+/* Hero Section */
 .hero-section {
     text-align: center;
     padding: 5rem 1rem 4rem 1rem;
     max-width: 800px;
     margin: 0 auto;
-}
-
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background-color: #EEF2FF;
-    color: #4F46E5;
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
 }
 
 .hero-title {
@@ -107,35 +40,23 @@
     align-items: center;
     gap: 0.5rem;
     background-color: #4F46E5;
-    color: #ffffff;
     padding: 0.8rem 1.8rem;
     border-radius: 8px;
     font-weight: bold;
     text-decoration: none;
     font-size: 1rem;
-    transition: background-color 0.2s;
-}
-
-.cta-primary:hover {
-    background-color: #4338CA;
 }
 
 .cta-secondary {
     background-color: #F3F4F6;
-    color: #374151;
     padding: 0.8rem 1.8rem;
     border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
     font-size: 1rem;
-    transition: background-color 0.2s;
 }
 
-.cta-secondary:hover {
-    background-color: #E5E7EB;
-}
-
-/* 3. Features Section */
+/* Features Section */
 .features-section {
     padding: 4rem 1rem;
     max-width: 1100px;
@@ -151,13 +72,15 @@
 }
 
 .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 2rem;
 }
 
 .feature-card {
     padding: 1.5rem;
+    max-width: 360px;
     border-radius: 12px;
     border: 1px solid #E5E7EB;
     background-color: #FAFAFA;
@@ -179,7 +102,6 @@
     margin-bottom: 1rem;
 }
 
-/* 特性图标背景颜色类别 */
 .icon-indigo { background-color: #EEF2FF; }
 .icon-emerald { background-color: #D1FAE5; }
 .icon-amber { background-color: #FEF3C7; }
@@ -196,7 +118,7 @@
     line-height: 1.5;
 }
 
-/* 4. Footer */
+/* Footer */
 .homepage-footer {
     border-top: 1px solid #E5E7EB;
     text-align: center;
