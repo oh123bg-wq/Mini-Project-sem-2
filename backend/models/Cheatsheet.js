@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+// Why do sub-document schema
+// allows me to define a complex Array of Objects, 
+// since each command needs both a 'command' string and a 'description'
 const CommandItemSchema = new mongoose.Schema({
     command: {
         type: String,

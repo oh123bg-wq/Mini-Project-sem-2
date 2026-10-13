@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { Copy, Check, Plus, Trash2, Tag, Edit } from 'lucide-react';
 import api from '../utils/api';
 import CheatsheetModal from '../components/CheatsheetModal';
-import '../assets/css/CheatsheetPage.css';
+import '../assets/css/ui.css';
 
 const CheatsheetPage = () => {
     const [cheatsheets, setCheatsheets] = useState([]);
     const [copiedId, setCopiedId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const initialForm = {
         title: '',
@@ -20,7 +21,9 @@ const CheatsheetPage = () => {
 
     const fetchCheatsheets = async () => {
         try {
-            const res = await api.get('/cheatsheets');
+            const res = await api.get('/cheatsheets', {
+                params: { search: searchTerm }
+            });
             setCheatsheets(res.data);
         } catch (err) {
             console.error('Failed to fetch cheatsheets:', err);
@@ -29,7 +32,7 @@ const CheatsheetPage = () => {
 
     useEffect(() => {
         fetchCheatsheets();
-    }, []);
+    }, [searchTerm]);
 
     const handleCopy = (text, id) => {
         navigator.clipboard.writeText(text);
@@ -89,9 +92,10 @@ const CheatsheetPage = () => {
 
     return (
         <div className="note-page-container">
+            {/* 页面 Header */}
             <header className="page-header">
                 <div>
-                    <h2>⚡ Quick Cheatsheets</h2>
+                    <h2>Quick Cheatsheets</h2>
                     <p className="subtitle">Reference commands, shortcuts, and code snippets instantly.</p>
                 </div>
                 <button className="primary-btn" onClick={() => setShowModal(true)}>
@@ -99,47 +103,68 @@ const CheatsheetPage = () => {
                 </button>
             </header>
 
+            <div className="toolbar-container mb-4">
+                <div className="row">
+                    <div className="col-12">
+                        <input 
+                            type="text" 
+                            className="form-control form-control-sm shadow-sm" 
+                            placeholder="Search by title, command, or description..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* 卡片列表：使用 ui.css 定义的网格与卡片样式 */}
             <div className="cheatsheet-grid">
-                {cheatsheets.map((item) => (
-                    <div className={`cheatsheet-card ${item.isPinned ? 'pinned' : ''}`} key={item._id}>
-                        <div className="card-top">
-                            <span className="category-badge">
-                                <Tag size={12} /> {item.category}
-                            </span>
-                            <div className="card-actions">
-                                <button onClick={() => handleEditClick(item)} className="action-btn text-primary">
-                                    <Edit size={16} />
-                                </button>
-                                <button onClick={() => handleDelete(item._id)} className="action-btn delete">
-                                    <Trash2 size={16} />
-                                </button>
+                {cheatsheets.length > 0 ? (
+                    cheatsheets.map((item) => (
+                        <div className={`cheatsheet-card ${item.isPinned ? 'pinned' : ''}`} key={item._id}>
+                            <div className="card-top">
+                                <span className="category-badge">
+                                    <Tag size={12} /> {item.category}
+                                </span>
+                                <div className="card-actions">
+                                    <button onClick={() => handleEditClick(item)} className="action-btn">
+                                        <Edit size={16} />
+                                    </button>
+                                    <button onClick={() => handleDelete(item._id)} className="action-btn delete">
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <h3 className="card-title text-break">{item.title}</h3>
+
+                            <div className="commands-list">
+                                {item.commands?.map((cmd, idx) => (
+                                    <div key={idx} className="command-block">
+                                        <div className="command-header">
+                                            <span className="desc-text text-break">{cmd.desc}</span>
+                                            <button 
+                                                className="copy-btn" 
+                                                onClick={() => handleCopy(cmd.command, `${item._id}-${idx}`)}
+                                            >
+                                                {copiedId === `${item._id}-${idx}` ? (
+                                                    <Check size={14} color="#10B981" />
+                                                ) : (
+                                                    <Copy size={14} />
+                                                )}
+                                            </button>
+                                        </div>
+                                        <pre className="command-code text-break"><code>{cmd.command}</code></pre>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-
-                        <h3 className="card-title text-break">{item.title}</h3>
-
-                        <div className="commands-list">
-                            {item.commands?.map((cmd, idx) => (
-                                <div key={idx} className="command-block">
-                                    <div className="command-header">
-                                        <span className="desc-text text-break">{cmd.desc}</span>
-                                        <button 
-                                            className="copy-btn" 
-                                            onClick={() => handleCopy(cmd.command, `${item._id}-${idx}`)}
-                                        >
-                                            {copiedId === `${item._id}-${idx}` ? (
-                                                <Check size={14} color="#10B981" />
-                                            ) : (
-                                                <Copy size={14} />
-                                            )}
-                                        </button>
-                                    </div>
-                                    <pre className="command-code text-break"><code>{cmd.command}</code></pre>
-                                </div>
-                            ))}
-                        </div>
+                    ))
+                ) : (
+                    <div className="text-center py-5 text-muted col-12">
+                        No cheatsheets found.
                     </div>
-                ))}
+                )}
             </div>
 
             <CheatsheetModal 

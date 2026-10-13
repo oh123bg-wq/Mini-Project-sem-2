@@ -11,11 +11,11 @@ const Register = () => {
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
+        // prevent page reload
         e.preventDefault();
-        // Add your login / authentication logic here
         // console.log("Register Form submitted:", { name, email, password });
         try {
-            const response = await api.post("/users/register", {
+            await api.post("/users/register", {
                 name,
                 email,
                 password,

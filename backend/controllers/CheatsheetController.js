@@ -1,8 +1,10 @@
 const Cheatsheet = require("../models/Cheatsheet");
 
-// 创建 Cheatsheet
+// Create a new Cheatsheet
 exports.addNewCheatsheet = async (req, res) => {
     try {
+        // Copy frontend data and 
+        // make sure the user is same as the user in db
         const cheatsheet = new Cheatsheet({
             ...req.body,
             userEmail: req.user.email 
@@ -14,26 +16,27 @@ exports.addNewCheatsheet = async (req, res) => {
     }
 };
 
-// 获取当前用户的所有 Cheatsheet（ Search & Filter）
+// Get all Cheatsheets for the current user
 exports.getAllCheatsheets = async (req, res) => {
     try {
-        const { search, category } = req.query; // 获取查询参数
+        // Extract search keywords from URL query
+        const { search } = req.query; 
+        // make sure only fetch this user's notes
         let query = { userEmail: req.user.email };
 
-        // Search 功能：模糊匹配 title，或者匹配数组内的 commands.command 和 commands.desc
+        // Use MongoDB's $or operator to search in title，或 commands.command 和 commands.desc
+        // $regex 允许部分匹配(allows partial matching)，
+        // 'i' 代表不区分大小写(case-insensitive)。
         if (search) {
             query.$or = [
                 { title: { $regex: search, $options: 'i' } },
+                // Use dot notation to search inside the array of sub-documents
                 { 'commands.command': { $regex: search, $options: 'i' } },
                 { 'commands.desc': { $regex: search, $options: 'i' } }
             ];
         }
 
-        // Filter 功能：根据分类过滤
-        if (category && category !== 'All') {
-            query.category = { $regex: category, $options: 'i' }; // 忽略大小写的分类匹配
-        }
-
+        // Sort: newest first (-1)
         const cheatsheets = await Cheatsheet.find(query).sort({ updatedAt: -1 });
         res.json(cheatsheets);
     } catch (error) {
@@ -41,9 +44,10 @@ exports.getAllCheatsheets = async (req, res) => {
     }
 };
 
-// 获取单条 Cheatsheet 详情
+// Get Cheatsheet by ID
 exports.getCheatsheetById = async (req, res) => {
     try {
+        // find one note that matches URL 里的 id (_id: req.params.id) 以及 userEmail
         const cheatsheet = await Cheatsheet.findOne({ _id: req.params.id, userEmail: req.user.email });
         if (!cheatsheet) {
             return res.status(404).json({ error: "Cheatsheet not found." });
@@ -54,9 +58,11 @@ exports.getCheatsheetById = async (req, res) => {
     }
 };
 
-// 更新 Cheatsheet
+// Update Cheatsheet
 exports.updateCheatsheet = async (req, res) => {
     try {
+        // find the specific note and update (only update their own note)
+        // { new: true } 表示返回更新成功后的最新文档对象（而非修改前的数据）
         const cheatsheet = await Cheatsheet.findOneAndUpdate(
             { _id: req.params.id, userEmail: req.user.email },
             req.body,
@@ -71,9 +77,10 @@ exports.updateCheatsheet = async (req, res) => {
     }
 };
 
-// 删除 Cheatsheet
+// Delete Cheatsheet
 exports.deleteCheatsheet = async (req, res) => {
     try {
+        // Dual verification: Match both _id and userEmail
         const cheatsheet = await Cheatsheet.findOneAndDelete({ _id: req.params.id, userEmail: req.user.email });
         if (!cheatsheet) {
             return res.status(404).json({ error: "Cheatsheet not found or unauthorized." });

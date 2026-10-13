@@ -9,6 +9,7 @@ const Login = ({ setUser }) => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
+    // Prevent logged-in users from seeing the login page
     useEffect(() => {
         const userToken = localStorage.getItem("token");
         // console.log(userToken);
@@ -16,20 +17,24 @@ const Login = ({ setUser }) => {
     }, []);
 
     const handleSubmit = async (e) => {
+        // Prevents page reload
         e.preventDefault();
 
-        // Add your login / authentication logic here
-        console.log("Form submitted:", { email, password });
+        // console.log("Form submitted:", { email, password });
         try {
+            // Send Login Request
             const response = await api.post("/users/login", {
                 email,
                 password,
             });
+            // Save the generated Token
             localStorage.setItem("token", response.data.token);
 
-            const userData = response.data.user || { email: email, name: email.split('@')[0], role: 'user' };
+            // save user data into LocalStorage (object become string)
+            const userData = response.data.user;
             localStorage.setItem("user", JSON.stringify(userData));
 
+            // update the user in App.jsx
             if (setUser) setUser(userData);
             navigate("/codenotes");
             console.log(response.data);

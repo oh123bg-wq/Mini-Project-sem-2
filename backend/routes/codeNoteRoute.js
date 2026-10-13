@@ -9,6 +9,7 @@ router.post("/", auth.authenticate, codeNoteController.addNewNote);
 router.get("/", auth.authenticate, codeNoteController.getAllNotes);
 router.get("/:id", auth.authenticate, codeNoteController.getNoteById);
 router.put("/:id", auth.authenticate, codeNoteController.updateNote);
+// change pin status
 router.patch("/:id/pin", auth.authenticate, codeNoteController.togglePinNote);
 router.delete("/:id", auth.authenticate, codeNoteController.deleteNote);
 

@@ -5,11 +5,12 @@ const auth = require('../middlewares/auth')
 
 router.use(express.json());
 
-router.post("/", auth.authenticate, classNoteController.addNewNote);              // 创建笔记
-router.get("/", auth.authenticate, classNoteController.getAllNotes);                 // 获取列表
-router.get("/:id", auth.authenticate, classNoteController.getNoteById);           // 获取单条详情
-router.put("/:id", auth.authenticate, classNoteController.updateNote);            // 更新笔记
-router.patch("/:id/pin", auth.authenticate, classNoteController.togglePinNote);   // 切换 Pin 状态
-router.delete("/:id", auth.authenticate, classNoteController.deleteNote);         // 删除笔记
+router.post("/", auth.authenticate, classNoteController.addNewNote); 
+router.get("/", auth.authenticate, classNoteController.getAllNotes); 
+router.get("/:id", auth.authenticate, classNoteController.getNoteById); 
+router.put("/:id", auth.authenticate, classNoteController.updateNote); 
+// change pin status
+router.patch("/:id/pin", auth.authenticate, classNoteController.togglePinNote); 
+router.delete("/:id", auth.authenticate, classNoteController.deleteNote); 
 
 module.exports = router;

@@ -68,7 +68,7 @@ body {
   box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
 }
 
-/* Filter & Search Toolbar (No !important) */
+/* Filter & Search Toolbar Card Wrapper */
 .toolbar-container {
   background: white;
   padding: 1rem;
@@ -76,56 +76,6 @@ body {
   border: 1px solid var(--border-color);
   box-shadow: var(--card-shadow);
   margin-bottom: 2rem;
-}
-
-/* Independent Select Dropdown */
-.toolbar-container select.form-select,
-.toolbar-container input.form-control:not(.input-group .form-control) {
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  padding: 0.6rem 0.9rem;
-  font-size: 0.925rem;
-  transition: all 0.2s ease;
-}
-
-.toolbar-container select.form-select:focus,
-.toolbar-container input.form-control:not(.input-group .form-control):focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-}
-
-/* Search Bar Input Group */
-.toolbar-container .input-group {
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  background-color: #ffffff;
-  transition: all 0.2s ease;
-  overflow: hidden;
-}
-
-.toolbar-container .input-group:focus-within {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-}
-
-.toolbar-container .input-group .input-group-text {
-  border: none;
-  background: transparent;
-  padding-left: 0.85rem;
-  padding-right: 0.25rem;
-}
-
-.toolbar-container .input-group .form-control {
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0.6rem 0.9rem 0.6rem 0.25rem;
-  font-size: 0.925rem;
-}
-
-.toolbar-container .input-group .form-control:focus {
-  border: none;
-  box-shadow: none;
 }
 
 /* Cards & Grid Layout */

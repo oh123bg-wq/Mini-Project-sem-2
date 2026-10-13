@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Define ClassNote schema structure
 const ClassNoteSchema = new mongoose.Schema(
     {
         userEmail: { 
