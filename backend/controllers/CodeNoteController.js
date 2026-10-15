@@ -51,7 +51,10 @@ exports.getAllNotes = async (req, res) => {
 exports.getNoteById = async (req, res) => {
     try {
         // find one note that matches URL 里的 id (_id: req.params.id) 以及 userEmail
-        const note = await CodeNote.findOne({ _id: req.params.id, userEmail: req.user.email });
+        const note = await CodeNote.findOne({ 
+            _id: req.params.id, // 1. Is this the right note?
+            userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+        });
         if (!note) {
             return res.status(404).json({ error: "Code note not found." });
         }
@@ -67,7 +70,10 @@ exports.updateNote = async (req, res) => {
         // find the specific note and update (only update their own note)
         // { new: true } 表示返回更新成功后的最新文档对象（而非修改前的数据）
         const note = await CodeNote.findOneAndUpdate(
-            { _id: req.params.id, userEmail: req.user.email },
+            { 
+                _id: req.params.id, // 1. Is this the right note?
+                userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+            },
             req.body,
             { new: true, runValidators: true }
         );
@@ -84,7 +90,10 @@ exports.updateNote = async (req, res) => {
 exports.togglePinNote = async (req, res) => {
     try {
         // find the specific note ad toggle pin(only toggle pin their own note)
-        const note = await CodeNote.findOne({ _id: req.params.id, userEmail: req.user.email });
+        const note = await CodeNote.findOne({ 
+            _id: req.params.id, // 1. Is this the right note?
+            userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+        });
         if (!note) {
             return res.status(404).json({ error: "Code note not found." });
         }
@@ -101,7 +110,10 @@ exports.togglePinNote = async (req, res) => {
 exports.deleteNote = async (req, res) => {
     try {
         // findOneAndDelete：查找匹配 _id 和 userEmail 的笔记并从数据库中直接删除
-        const note = await CodeNote.findOneAndDelete({ _id: req.params.id, userEmail: req.user.email });
+        const note = await CodeNote.findOneAndDelete({ 
+            _id: req.params.id, // 1. Is this the right note?
+            userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+        });
         if (!note) {
             return res.status(404).json({ error: "Code note not found or unauthorized." });
         }

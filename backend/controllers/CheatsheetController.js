@@ -7,7 +7,7 @@ exports.addNewCheatsheet = async (req, res) => {
         // make sure the user is same as the user in db
         const cheatsheet = new Cheatsheet({
             ...req.body,
-            userEmail: req.user.email 
+            userEmail: req.user.email // Does this note belong to the guy holding the token?
         });
         await cheatsheet.save();
         res.status(201).json(cheatsheet);
@@ -48,7 +48,10 @@ exports.getAllCheatsheets = async (req, res) => {
 exports.getCheatsheetById = async (req, res) => {
     try {
         // find one note that matches URL 里的 id (_id: req.params.id) 以及 userEmail
-        const cheatsheet = await Cheatsheet.findOne({ _id: req.params.id, userEmail: req.user.email });
+        const cheatsheet = await Cheatsheet.findOne({ 
+            _id: req.params.id, // 1. Is this the right note?
+            userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+        });
         if (!cheatsheet) {
             return res.status(404).json({ error: "Cheatsheet not found." });
         }
@@ -64,7 +67,10 @@ exports.updateCheatsheet = async (req, res) => {
         // find the specific note and update (only update their own note)
         // { new: true } 表示返回更新成功后的最新文档对象（而非修改前的数据）
         const cheatsheet = await Cheatsheet.findOneAndUpdate(
-            { _id: req.params.id, userEmail: req.user.email },
+            { 
+                _id: req.params.id, // 1. Is this the right note?
+                userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+            },
             req.body,
             { new: true, runValidators: true }
         );
@@ -81,7 +87,10 @@ exports.updateCheatsheet = async (req, res) => {
 exports.deleteCheatsheet = async (req, res) => {
     try {
         // Dual verification: Match both _id and userEmail
-        const cheatsheet = await Cheatsheet.findOneAndDelete({ _id: req.params.id, userEmail: req.user.email });
+        const cheatsheet = await Cheatsheet.findOneAndDelete({ 
+            _id: req.params.id, // 1. Is this the right note?
+            userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+        });
         if (!cheatsheet) {
             return res.status(404).json({ error: "Cheatsheet not found or unauthorized." });
         }

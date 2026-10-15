@@ -82,7 +82,7 @@ const CodeNotesPage = () => {
         e.preventDefault();
         try {
             if (editingId) {
-                // , payload is to send the edited data to backend so that backend know edit what data
+                // , formData is to send the edited data to backend so that backend know edit what data
                 const res = await api.put(`/codeNotes/${editingId}`, formData);
                 setSnippets(snippets.map((s) => (s._id === editingId ? res.data : s)));
             } else {
@@ -113,6 +113,11 @@ const CodeNotesPage = () => {
         setShowModal(true);
     };
 
+    // Dropdown
+    // 1. map(): Get all categories
+    // 2. filter(Boolean): Remove empty/null values
+    // 3. new Set(): Remove duplicates
+    // 4. ["All", ...]: Add "All" as the first option
     const categories = ["All", ...Array.from(new Set(snippets.map((s) => s.category).filter(Boolean)))];
 
     // 过滤 + 置顶项优先排序

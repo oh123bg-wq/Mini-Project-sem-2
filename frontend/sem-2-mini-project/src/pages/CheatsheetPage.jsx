@@ -19,24 +19,31 @@ const CheatsheetPage = () => {
 
     const [formData, setFormData] = useState(initialForm);
 
+    // Get all notes
     const fetchCheatsheets = async () => {
         try {
             const res = await api.get('/cheatsheets', {
                 params: { search: searchTerm }
             });
+            // update the 'cheatsheets' state (show all notes)
             setCheatsheets(res.data);
         } catch (err) {
             console.error('Failed to fetch cheatsheets:', err);
         }
     };
 
+    // get all notes when ppl search and (when the page load)
     useEffect(() => {
         fetchCheatsheets();
     }, [searchTerm]);
 
     const handleCopy = (text, id) => {
+        // 使用浏览器原生的 Clipboard API 将代码文本写入系统剪贴板
+        // save the code directly to the user's clipboard.
         navigator.clipboard.writeText(text);
+        // 记录被复制的 snippet ID，触发UI图标变为 Check
         setCopiedId(id);
+        // 设置 2 秒定时器，2 秒后清空 copiedId，图标恢复原状
         setTimeout(() => setCopiedId(null), 2000);
     };
 
@@ -44,31 +51,46 @@ const CheatsheetPage = () => {
         if (!window.confirm('Delete this cheatsheet?')) return;
         try {
             await api.delete(`/cheatsheets/${id}`);
+            // Update the page without refresh page
             setCheatsheets(cheatsheets.filter(item => item._id !== id));
         } catch (err) {
             console.error('Delete cheatsheet failed:', err);
         }
     };
 
+    // function that triggers when user click the edit button
     const handleEditClick = (item) => {
+        // fill in the existing data of the notes
         setFormData({ 
             title: item.title, 
             category: item.category, 
             commands: item.commands && item.commands.length > 0 
-                ? item.commands.map(c => ({ command: c.command, desc: c.desc || '' })) 
+                // Check if the item has existing commands. If yes, map over them to populate the form.
+                ? item.commands.map(c => ({ 
+                    command: c.command, 
+                    // Fallback to an empty string if the description is missing to prevent UI errors
+                    desc: c.desc || '' 
+                })) 
+                // If there are no commands, provide a default empty input row for the user
                 : [{ command: '', desc: '' }]
         });
+        // let the app know which note you editing
         setEditingId(item._id);
+        // show the modal out
         setShowModal(true);
     };
 
+    // Close modal and reset form
     const handleCloseModal = () => {
         setShowModal(false);
         setEditingId(null);
+        // reset the form
         setFormData(initialForm);
     };
 
+    // Create or Update
     const handleSubmit = async (e) => {
+        // prevent page refresh
         e.preventDefault();
         try {
             const payload = {
@@ -78,10 +100,13 @@ const CheatsheetPage = () => {
             };
             
             if (editingId) {
+                // , payload is to send the edited data to backend so that backend know edit what data
                 const res = await api.put(`/cheatsheets/${editingId}`, payload);
                 setCheatsheets(cheatsheets.map(item => item._id === editingId ? res.data : item));
             } else {
+                // create new cheatsheet
                 const res = await api.post('/cheatsheets', payload);
+                // update the page, latest cheatsheet in front
                 setCheatsheets([res.data, ...cheatsheets]);
             }
             handleCloseModal();
@@ -92,7 +117,7 @@ const CheatsheetPage = () => {
 
     return (
         <div className="note-page-container">
-            {/* 页面 Header */}
+            {/* Header */}
             <header className="page-header">
                 <div>
                     <h2>Quick Cheatsheets</h2>
@@ -117,7 +142,6 @@ const CheatsheetPage = () => {
                 </div>
             </div>
 
-            {/* 卡片列表：使用 ui.css 定义的网格与卡片样式 */}
             <div className="cheatsheet-grid">
                 {cheatsheets.length > 0 ? (
                     cheatsheets.map((item) => (

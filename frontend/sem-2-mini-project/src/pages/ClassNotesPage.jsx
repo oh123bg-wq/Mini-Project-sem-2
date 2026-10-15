@@ -214,6 +214,7 @@ const ClassNotesPage = () => {
 
                         <div className="d-flex align-items-center gap-1 text-muted fs-7 pt-2 border-top">
                             <Calendar size={14} />
+                            {/* toLocaleDateString() is to convert the date in db to acutal date */}
                             <span>Updated: {new Date(note.updatedAt).toLocaleDateString()}</span>
                         </div>
                     </div>

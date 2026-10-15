@@ -10,21 +10,24 @@ const AdminDashboard = () => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [editUserId, setEditUserId] = useState(null);
 
-    // 初始化表单数据
+    // Default form structure
     const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "user" });
 
-    // 从 LocalStorage 获取当前登录的管理员，用于权限比对
+    // Get current logged-in admin from LocalStorage，用于权限比对
     const currentUser = JSON.parse(localStorage.getItem("user"));
 
+    // get all users
     const fetchUsers = async () => {
         try {
             const res = await api.get("/users");
+            // update page and show all users
             setUsers(res.data);
         } catch (err) {
             console.error("Failed to fetch users", err);
         }
     };
 
+    // Auto-fetch when page loads
     useEffect(() => {
         fetchUsers();
     }, []);
@@ -33,25 +36,22 @@ const AdminDashboard = () => {
         if (!window.confirm("Are you sure you want to delete this user?")) return;
         try {
             await api.delete(`/users/${id}`);
+            // filter the array to keep only the notes whose ID does NOT match the deleted ID
             setUsers(users.filter((u) => u._id !== id));
         } catch (err) {
             alert(err.response?.data?.error || "Delete user failed");
         }
     };
 
-    // 触发创建模式 Pop-out Modal
+    // Open Modal for Create
     const handleCreateClick = () => {
         setIsEditMode(false);
         setFormData({ name: "", email: "", password: "", role: "user" });
         setShowModal(true);
     };
 
-    // 触发编辑模式 Pop-out Modal
+    // Open Modal for Edit
     const handleEditClick = (user) => {
-        if (currentUser && user._id === currentUser._id) {
-            alert("Action Denied: You cannot edit your own account.");
-            return;
-        }
         setIsEditMode(true);
         setEditUserId(user._id);
         // 密码留空，只有在输入新密码时才更新
@@ -59,12 +59,14 @@ const AdminDashboard = () => {
         setShowModal(true);
     };
 
+    // close modal
     const handleCloseModal = () => {
         setShowModal(false);
+        // reset the form
         setFormData({ name: "", email: "", password: "", role: "user" });
     };
 
-    // 提交表单数据
+    // Submit Form (Create or Edit)
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -75,11 +77,12 @@ const AdminDashboard = () => {
             }
 
             if (isEditMode) {
-                // 执行更新请求
+                // , payload is to send the edited data to backend so that backend know edit what data
+                // Update existing user (PUT)
                 const res = await api.put(`/users/${editUserId}`, payload);
                 setUsers(users.map((u) => (u._id === editUserId ? res.data : u)));
             } else {
-                // 执行创建请求
+                // Create new user (POST)
                 const res = await api.post(`/users`, payload);
                 setUsers([...users, res.data]);
             }
@@ -95,7 +98,6 @@ const AdminDashboard = () => {
             <header className="page-header">
                 <div>
                     <h2>
-                        <ShieldCheck className="text-warning d-inline me-2" size={28} />
                         Admin Dashboard
                     </h2>
                     <p className="subtitle">Manage user accounts, roles, and permissions.</p>
@@ -125,6 +127,7 @@ const AdminDashboard = () => {
                         </thead>
                         <tbody>
                             {users.map((u) => {
+                                // 检查这一行是不是当前登录的管理员自己
                                 const isSelf = currentUser && u._id === currentUser._id;
 
                                 return (
@@ -139,6 +142,7 @@ const AdminDashboard = () => {
                                         </td>
                                         <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "N/A"}</td>
                                         <td className="text-end pe-4">
+                                            {/* Disable buttons if it's the admin's own account */}
                                             <button onClick={() => handleEditClick(u)} className="action-btn me-2" disabled={isSelf} title={isSelf ? "Cannot edit self" : "Edit User"}>
                                                 <Edit size={16} />
                                             </button>

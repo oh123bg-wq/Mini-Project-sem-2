@@ -3,6 +3,8 @@ const router = express.Router();
 const classNoteController = require("../controllers/ClassNoteController");
 const auth = require('../middlewares/auth')
 
+// Translates the JSON text sent from the frontend 
+// into a JavaScript object (req.body)
 router.use(express.json());
 
 router.post("/", auth.authenticate, classNoteController.addNewNote); 

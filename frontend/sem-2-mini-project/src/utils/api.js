@@ -9,11 +9,11 @@ const api = axios.create({
 // Request Interceptor: 在发送请求之前自动塞入 Authorization Header
 // add bearer token to the request
 api.interceptors.request.use((config) => {
-  // Get token from local storage to make sure user is logged in
+  // Get token from local storage to make sure user is logged in and get the token
   const token = localStorage.getItem('token');
   // if got 
   if (token) {
-    // put the token into th erequest header
+    // put the token into the request header
     config.headers.Authorization = `Bearer ${token}`;
   }
   // and continue send to backend not matter got or no token

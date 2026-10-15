@@ -3,10 +3,10 @@ const ClassNote = require("../models/ClassNote");
 // Create a new note
 exports.addNewNote = async (req, res) => {
     try {
-        // 根据前端提交的 req.body 创建一个新的 ClassNote
+        // req.body is get all user data like the note title.... from frontend
         const note = new ClassNote({
             ...req.body,
-            userEmail: req.user.email
+            userEmail: req.user.email // Does this note belong to the guy holding the token?
         });
         // save the note to mongodb
         await note.save();
@@ -54,7 +54,10 @@ exports.getAllNotes = async (req, res) => {
 exports.getNoteById = async (req, res) => {
     try {
         // find one note that matches URL 里的 id (_id: req.params.id) 以及 userEmail
-        const note = await ClassNote.findOne({ _id: req.params.id, userEmail: req.user.email });
+        const note = await ClassNote.findOne({ 
+            _id: req.params.id, // 1. Is this the right note?
+            userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+        });
 
         // if can't find note
         if (!note) {
@@ -75,7 +78,10 @@ exports.updateNote = async (req, res) => {
         // only edit their own notes, preventing them from modifying someone else's data.
         // { new: true } 表示返回更新成功后的最新文档对象（而非修改前的数据）
         const note = await ClassNote.findOneAndUpdate(
-            { _id: req.params.id, userEmail: req.user.email },
+            { 
+                _id: req.params.id, // 1. Is this the right note?
+                userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+            },
             req.body,
             { new: true, runValidators: true }
         );
@@ -95,7 +101,10 @@ exports.updateNote = async (req, res) => {
 exports.togglePinNote = async (req, res) => {
     try {
         // 先查询属于该用户的指定 ID 笔记
-        const note = await ClassNote.findOne({ _id: req.params.id, userEmail: req.user.email });
+        const note = await ClassNote.findOne({ 
+            _id: req.params.id, // 1. Is this the right note?
+            userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+        });
 
         // if can't find note
         if (!note) {
@@ -118,7 +127,10 @@ exports.togglePinNote = async (req, res) => {
 exports.deleteNote = async (req, res) => {
     try {
         // findOneAndDelete：查找匹配 _id 和 userEmail 的笔记并从数据库中直接删除
-        const note = await ClassNote.findOneAndDelete({ _id: req.params.id, userEmail: req.user.email });
+        const note = await ClassNote.findOneAndDelete({ 
+            _id: req.params.id, // 1. Is this the right note?
+            userEmail: req.user.email // 2. Does this note belong to the guy holding the token?
+        });
 
         // if can't find note，说明无权删除或已被删除
         if (!note) {

@@ -3,7 +3,13 @@ const AdminDashboardModal = ({ show, onClose, onSubmit, formData, setFormData, i
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        // Update the state using the previous state (prev)
+        setFormData(prev => ({ 
+            // Keep all other existing form data safe
+            ...prev, 
+            // Dynamic key update (the name can be either 'name' or 'email' or 'psd' or 'role') 
+            [name]: value 
+        }));
     };
 
     return (

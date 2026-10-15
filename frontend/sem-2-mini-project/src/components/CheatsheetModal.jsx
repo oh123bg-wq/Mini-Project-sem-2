@@ -3,27 +3,36 @@ import { Plus, Trash2 } from 'lucide-react';
 const CheatsheetModal = ({ show, onClose, onSubmit, formData, setFormData, isEditing }) => {
     if (!show) return null;
 
-    // 更新特定索引位置的 command 或 desc
+    // Update a specific command or description
     const handleCommandChange = (index, field, value) => {
+        // Copy the existing array
         const updatedCommands = [...formData.commands];
+        // Update the specific field (either 'desc' or 'command') at the given index
         updatedCommands[index] = { 
+            // Keep all other existing form data safe
             ...updatedCommands[index], 
+            // Dynamic key update (the field can be either 'desc' or 'command')
             [field]: value 
         };
+        // update the page
         setFormData({ ...formData, commands: updatedCommands });
     };
 
-    // 添加新的 Command 行
+    // Add a new command row
     const handleAddCommand = () => {
         setFormData({
+            // fill in the existing data of the notes
             ...formData,
+            // add new row
             commands: [...formData.commands, { command: '', desc: '' }]
         });
     };
 
-    // 删除指定索引的 Command 行
+    // Remove a specific command row
     const handleRemoveCommand = (index) => {
+        // Filter out the item that matches the index / 过滤掉点击删除的那一行
         const updatedCommands = formData.commands.filter((_, i) => i !== index);
+        // update the page
         setFormData({ ...formData, commands: updatedCommands });
     };
 
@@ -89,7 +98,7 @@ const CheatsheetModal = ({ show, onClose, onSubmit, formData, setFormData, isEdi
                                         )}
                                     </div>
 
-                                    {/* Description 放在前面 */}
+                                    {/* Description */}
                                     <div className="mb-2">
                                         <label className="form-label small text-muted mb-1">Description</label>
                                         <input 
@@ -101,7 +110,7 @@ const CheatsheetModal = ({ show, onClose, onSubmit, formData, setFormData, isEdi
                                         />
                                     </div>
 
-                                    {/* Command / Code 放在后面 */}
+                                    {/* Command / Code */}
                                     <div>
                                         <label className="form-label small text-muted mb-1">Command / Code</label>
                                         <textarea 

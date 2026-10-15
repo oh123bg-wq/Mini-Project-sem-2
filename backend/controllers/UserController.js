@@ -7,7 +7,7 @@ exports.register = async (req, res) => {
     try {
         // req.body is get all user data like the user name.... from frontend
         const user = new User(req.body);
-        // save the data and before save hash password 
+        // save the data and before it save hash password 
         await user.save();
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
@@ -93,7 +93,7 @@ exports.updateUser = async (req, res) => {
         // here just edit passowrd if admin edit
         // 如果输入了新密码，必须重新进行 Hash 加密
         if (password) {
-            const salt = await bcrypt.genSalt(10);
+            const salt = await bcrypt.genSalt(BCRYPT_SALT_ROUNDS);
             updateData.password = await bcrypt.hash(password, salt);
         }
 

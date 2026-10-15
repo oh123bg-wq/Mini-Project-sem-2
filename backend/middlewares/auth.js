@@ -11,6 +11,7 @@ exports.authenticate = async (req, res, next) => {
         // go find the user email
         const user = await User.findOne({ email: decoded.userEmail });
         if (!user) throw new Error("No user found!");
+        // get the data from db after finding with the email
         req.user = user;
         req.userEmail = user.email;
         next();
